@@ -11,15 +11,13 @@
       <CardContent class="space-y-5 px-0 pb-0">
         <form class="space-y-2.5">
           <Input
-            value=""
-            @change=""
+            v-model="signInForm.email"
             placeholder="Email"
             type="email"
             required
           />
           <Input
-            value=""
-            @change=""
+            v-model="signInForm.password"
             placeholder="Password"
             type="password"
             required
@@ -112,6 +110,16 @@ const emit = defineEmits<SignInCardProps>();
 const changeLoginState = (state: SignInFlow) => {
   emit("changeLoginState", state);
 };
+
+interface SignInForm {
+  email: string;
+  password: string;
+}
+
+const signInForm = ref<SignInForm>({
+  email: "",
+  password: "",
+});
 </script>
 
 <style scoped></style>
