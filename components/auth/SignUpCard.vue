@@ -28,11 +28,23 @@
             type="password"
             required
           />
-          <Button type="submit" class="w-full" size="lg"> Continue </Button>
+          <Button
+            type="submit"
+            class="w-full"
+            size="lg"
+            @click.prevent="handleSignUp"
+          >
+            Continue
+          </Button>
         </form>
         <Separator />
         <div class="flex flex-col gap-y-2.5 relative">
-          <Button class="w-full relative" variant="outline" size="lg" @click="">
+          <Button
+            class="w-full relative"
+            variant="outline"
+            size="lg"
+            @click="handleSignInWithGoogle"
+          >
             <svg
               class="absolute top-[0.8rem] left-3 size-5 z-2"
               xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +71,12 @@
             </svg>
             Sign in with Google
           </Button>
-          <Button class="w-full relative" variant="outline" size="lg" @click="">
+          <Button
+            class="w-full relative"
+            variant="outline"
+            size="lg"
+            @click="handleSignInWithGithub"
+          >
             <svg
               class="absolute top-[0.8rem] left-3 size-5 z-2"
               xmlns="http://www.w3.org/2000/svg"
@@ -106,7 +123,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/components/ui/toast/use-toast";
 import type { SignInFlow } from "./types";
+
+const { signUpWithEmailAndPassword } = useAuth();
 interface SignUpCardProps {
   changeLoginState: (state: SignInFlow) => void;
 }
@@ -124,10 +144,57 @@ interface SignUpForm {
 }
 
 const signUpForm = ref<SignUpForm>({
-  email: "",
-  password: "",
-  confirmPassword: "",
+  email: "1440161919@qq.com",
+  password: "123456",
+  confirmPassword: "123456",
 });
+
+const { toast } = useToast();
+
+const handleSignUp = async () => {
+  if (signUpForm.value.password !== signUpForm.value.confirmPassword) {
+    toast({
+      title: "Password not match",
+      description: "Please check your password and confirm password",
+    });
+    return;
+  }
+
+  const { data, error } = await signUpWithEmailAndPassword(
+    signUpForm.value.email,
+    signUpForm.value.password
+  );
+
+  if (error) {
+    toast({
+      title: "Sign up failed",
+      description: error.message,
+    });
+    return;
+  }
+
+  const { user } = data;
+
+  const isNewUser = user?.identities.length >= 1;
+  const description = isNewUser
+    ? "Please check your email to verify"
+    : "You have signed up with this email before";
+
+  if (data) {
+    toast({
+      title: "Sign up successfully",
+      description,
+    });
+  }
+};
+
+function handleSignInWithGithub() {
+  signInWithGithub();
+}
+
+function handleSignInWithGoogle() {
+  signInWithGoogle();
+}
 </script>
 
 <style scoped></style>

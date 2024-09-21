@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- <Button @click="handleSignOut">Sign out</Button> -->
     <Card class="w-full h-full p-8">
       <CardHeader class="px-0 pt-0">
         <CardTitle>Login to continue</CardTitle>
@@ -22,11 +23,22 @@
             type="password"
             required
           />
-          <Button type="submit" class="w-full" size="lg">Sign in</Button>
+          <Button
+            type="submit"
+            class="w-full"
+            size="lg"
+            @click.prevent="handleSignIn"
+            >Sign in</Button
+          >
         </form>
         <Separator />
         <div class="flex flex-col gap-y-2.5 relative">
-          <Button class="w-full relative" variant="outline" size="lg" @click="">
+          <Button
+            class="w-full relative"
+            variant="outline"
+            size="lg"
+            @click="handleSignInWithGoogle"
+          >
             <svg
               class="absolute top-[0.8rem] left-3 size-5 z-2"
               xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +65,12 @@
             </svg>
             Sign in with Google
           </Button>
-          <Button class="w-full relative" variant="outline" size="lg" @click="">
+          <Button
+            class="w-full relative"
+            variant="outline"
+            size="lg"
+            @click="handleSignInWithGithub"
+          >
             <svg
               class="absolute top-[0.8rem] left-3 size-5 z-2"
               xmlns="http://www.w3.org/2000/svg"
@@ -101,6 +118,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { SignInFlow } from "./types";
+import { useAuth } from "@/composables/useAuth";
+
+const { clearUser } = useUserStore();
+
 interface SignInCardProps {
   changeLoginState: (state: SignInFlow) => void;
 }
@@ -117,9 +138,42 @@ interface SignInForm {
 }
 
 const signInForm = ref<SignInForm>({
-  email: "",
-  password: "",
+  email: "1440161919@qq.com",
+  password: "123456",
 });
+
+/**
+ * Sign in with Github
+ */
+const {
+  signInWithGithub,
+  signInWithEmailAndPassword,
+  signInWithGoogle,
+  signOut,
+} = useAuth();
+
+function handleSignInWithGithub() {
+  signInWithGithub();
+}
+
+function handleSignInWithGoogle() {
+  signInWithGoogle();
+}
+async function handleSignIn() {
+  const { data, error } = await signInWithEmailAndPassword(
+    signInForm.value.email,
+    signInForm.value.password
+  );
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (data) {
+    setUser(data?.user);
+  }
+}
 </script>
 
 <style scoped></style>

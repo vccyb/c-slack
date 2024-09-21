@@ -1,27 +1,23 @@
-<!-- <template>
+<template>
   <div>
+    <Toaster />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
   </div>
-</template> -->
+</template>
 
-<script setup>
+<script setup lang="ts">
+import { useToast } from "@/components/ui/toast/use-toast";
+import Toaster from "@/components/ui/toast/Toaster.vue";
 const supabase = useSupabase();
-const countries = ref([]);
 
-async function getCountries() {
-  const { data } = await supabase.from("countries").select();
-  countries.value = data;
-}
+const { setUser } = useUserStore();
 
-onMounted(() => {
-  getCountries();
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log(event, session);
+  if (session) {
+    setUser(session?.user);
+  }
 });
 </script>
-
-<template>
-  <ul>
-    <li v-for="country in countries" :key="country.id">{{ country.name }}</li>
-  </ul>
-</template>
