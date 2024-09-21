@@ -13,6 +13,7 @@ export function useAuth() {
     });
 
     if (error) console.error("GitHub sign in error:", error);
+    return { data, error };
   };
 
   /**
@@ -24,6 +25,7 @@ export function useAuth() {
     });
 
     if (error) console.error("Google sign in error:", error);
+    return { data, error };
   };
 
   /**
@@ -89,11 +91,19 @@ export function useAuth() {
     }
   };
 
+  const getSession = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    return session;
+  };
+
   return {
     signInWithGithub,
     signInWithGoogle,
     signUpWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
+    getSession,
   };
 }

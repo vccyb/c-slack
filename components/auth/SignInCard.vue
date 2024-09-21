@@ -120,7 +120,7 @@ import { Separator } from "@/components/ui/separator";
 import type { SignInFlow } from "./types";
 import { useAuth } from "@/composables/useAuth";
 
-const { clearUser } = useUserStore();
+const { clearUser, setUser } = useUserStore();
 
 interface SignInCardProps {
   changeLoginState: (state: SignInFlow) => void;
@@ -150,14 +150,17 @@ const {
   signInWithEmailAndPassword,
   signInWithGoogle,
   signOut,
+  getSession,
 } = useAuth();
 
-function handleSignInWithGithub() {
-  signInWithGithub();
+async function handleSignInWithGithub() {
+  const { data } = await signInWithGithub();
+  navigateTo("/");
 }
 
-function handleSignInWithGoogle() {
-  signInWithGoogle();
+async function handleSignInWithGoogle() {
+  const { data } = await signInWithGoogle();
+  navigateTo("/");
 }
 async function handleSignIn() {
   const { data, error } = await signInWithEmailAndPassword(
@@ -173,6 +176,7 @@ async function handleSignIn() {
   if (data) {
     setUser(data?.user);
   }
+  navigateTo("/");
 }
 </script>
 
